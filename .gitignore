@@ -1,0 +1,9 @@
+# If you find yourself wanting to ignore files specific to your editor or your
+# operating system, add them to your `core.excludesFile`. The default location
+# of this file is `$HOME/.config/git/ignore`. You can set a custom location for
+# your excludes file using `git config --global core.excludesfile ~/.gitignore`.
+#
+# https://git-scm.com/docs/gitignore
+
+/music
+.DS_Store
