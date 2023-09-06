@@ -7,3 +7,5 @@
 
 /music
 .DS_Store
+/build
+/.vscode
