@@ -15,6 +15,8 @@
 #define SPI_MISO      19
 #define SPI_SCK       18
 
+#define REED_SWITCH   21
+
 #define I2S_DOUT      25
 #define I2S_BCLK      27    // I2S
 #define I2S_LRC       26
@@ -27,8 +29,11 @@ Audio audio;
 
 File RootDir;
 
+int reedSwitchState;
+
 void setup() {
-    pinMode(SD_CS, OUTPUT);      
+    pinMode(SD_CS, OUTPUT);    
+    pinMode(REED_SWITCH, INPUT_PULLUP); // set ESP32 pin to input pull-up mode  
     digitalWrite(SD_CS, HIGH);
     SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
     Serial.begin(115200);
@@ -44,8 +49,15 @@ void setup() {
 
 void loop()
 {
+  reedSwitchState = digitalRead(REED_SWITCH); // read state
+
+   if (reedSwitchState == HIGH) {
     audio.loop(); 
-    audio.setVolume(5);         // Check volume level and adjust if necassary
+    audio.setVolume(10);         // Check volume level and adjust if necassary
+  } else {
+    Serial.println("The box is closed");
+  }
+    
 }
 
 
