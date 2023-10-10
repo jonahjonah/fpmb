@@ -105,3 +105,28 @@ ets Jul 29 2019 12:21:46
   - [ ] thick
     - Deciding which one I want. This is a contender https://www.amazon.com/gp/product/B00DE2QVIG/ref=ox_sc_saved_title_1?smid=AJ3PYHDIZANTK&psc=1
   - [x] fine
+
+## 10/9/23
+
+- Built board 4!
+
+  - Tried to upload the code, but was getting an error saying `A fatal error occurred: Failed to connect to ESP32: No serial data received.`
+  - ````
+    Sketch uses 848333 bytes (64%) of program storage space. Maximum is 1310720 bytes.
+    Global variables use 29608 bytes (9%) of dynamic memory, leaving 298072 bytes for local variables. Maximum is 327680 bytes.
+    esptool.py v4.5.1
+    Serial port /dev/cu.usbserial-0001
+    Connecting......................................
+
+    A fatal error occurred: Failed to connect to ESP32: No serial data received.
+    For troubleshooting steps visit: https://docs.espressif.com/projects/esptool/en/latest/troubleshooting.html
+    Failed uploading: uploading error: exit status 2```
+    ````
+
+  - Tried going into bootloader mode by holding `BOOT` and clicking `EN` but that didn't seem to work
+  - Tried uploading and clicking `BOOT` several times during upload (`........` section) but that also didn't work
+  - **Apparently this happens on some ESP32s, not sure what to do about it...**
+    - [ ] Ask Ty? Maybe we can hop on a zoom some time?
+
+- Tried testing older code on other boards, and all are still getting `Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.` error
+  - It seems like this is caused by memory running out and a memory location getting overwritten, and then incorrectly accessed
