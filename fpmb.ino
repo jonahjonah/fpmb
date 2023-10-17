@@ -10,16 +10,16 @@
 #include "FS.h"
 
 // Digital I/O used
-#define SD_CS          5
-#define SPI_MOSI      23    // SD Card
-#define SPI_MISO      19
-#define SPI_SCK       18
+#define SD_CS 5
+#define SPI_MOSI 23  // SD Card
+#define SPI_MISO 19
+#define SPI_SCK 18
 
-#define REED_SWITCH   21
+#define REED_SWITCH 21
 
-#define I2S_DOUT      25
-#define I2S_BCLK      27    // I2S
-#define I2S_LRC       26
+#define I2S_DOUT 25
+#define I2S_BCLK 27  // I2S
+#define I2S_LRC 26
 
 // #define VolPin        13
 
@@ -32,96 +32,89 @@ File RootDir;
 int reedSwitchState;
 
 void setup() {
-    Serial.begin(57600);
+  Serial.begin(57600);
 
-    Serial.println("Setup");
+  Serial.println("Setup");
 
-    pinMode(SD_CS, OUTPUT);    
-    pinMode(REED_SWITCH, INPUT_PULLUP); // set ESP32 pin to input pull-up mode  
-    digitalWrite(SD_CS, HIGH);
-    SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    if(!SD.begin(SD_CS))
-    {
-      Serial.println("Error talking to SD card!");
-      while(true);                  // end program
-    }
-    audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-    RootDir = SD.open("/");
-    PlayNextSong();                         // Play next song, which will be the first at this point
+  pinMode(SD_CS, OUTPUT);
+  pinMode(REED_SWITCH, INPUT_PULLUP);  // set ESP32 pin to input pull-up mode
+  digitalWrite(SD_CS, HIGH);
+  SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+  if (!SD.begin(SD_CS)) {
+    Serial.println("Error talking to SD card!");
+    while (true)
+      ;  // end program
+  }
+  audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+  RootDir = SD.open("/");
+  PlayNextSong();  // Play next song, which will be the first at this point
 }
 
-void loop()
-{
-  reedSwitchState = digitalRead(REED_SWITCH); // read state
+void loop() {
+  reedSwitchState = digitalRead(REED_SWITCH);  // read state
 
-   if (reedSwitchState == HIGH) {
-     Serial.println("looping");
-    audio.loop(); 
+  if (reedSwitchState == HIGH) {
+    Serial.println("looping");
+    audio.loop();
     Serial.println("setting volume");
 
-    audio.setVolume(20);         // Check volume level and adjust if necassary
+    audio.setVolume(20);  // Check volume level and adjust if necassary
     Serial.println("done");
 
   } else {
     Serial.println("The box is closed");
   }
-    
 }
 
 
-void audio_eof_mp3(const char *info){  //end of file
-    PlayNextSong();
+void audio_eof_mp3(const char *info) {  //end of file
+  PlayNextSong();
 }
 
-void PlayNextSong()
-{  
-  bool SongFound=false;
-  bool DirRewound=false;
-  
-  while(SongFound==false)
-  {
+void PlayNextSong() {
+  bool SongFound = false;
+  bool DirRewound = false;
+
+  while (SongFound == false) {
     Serial.println("finding files");
-    File entry =  RootDir.openNextFile();
-    if (!entry)      // no more files
+    File entry = RootDir.openNextFile();
+    if (!entry)  // no more files
     {
       Serial.println("no more files");
-      if(DirRewound==true)              // If we've already rewound once then there are no songs to play in this DIR
+      if (DirRewound == true)  // If we've already rewound once then there are no songs to play in this DIR
       {
         Serial.println("No MP3 files found to play");
         entry.close();
         return;
       }
       //else we've reached the end of all files in this directory, just rewind back to beginning
-      RootDir.rewindDirectory();           // reset back to beginning
-      DirRewound=true;            // Flag that we've rewound
-    }
-    else
-    {
+      RootDir.rewindDirectory();  // reset back to beginning
+      DirRewound = true;          // Flag that we've rewound
+    } else {
       Serial.println("found file");
-      if (!entry.isDirectory())                // only enter this if not a DIR
+      if (!entry.isDirectory())  // only enter this if not a DIR
       {
         Serial.println("not dir");
-        if(MusicFile(entry.name()))                   // Only enter if one of the acceptable music files
-        {  
+        if (MusicFile(entry.name()))  // Only enter if one of the acceptable music files
+        {
           //Serial.print("Playing ");Serial.println(entry.name());
-          audio.connecttoSD(entry.name());                          // Play the file
+          audio.connecttoSD(entry.name());  // Play the file
           Serial.println("called audio.connectoSD");
-          SongFound=true;
+          SongFound = true;
         }
       }
-    }    
+    }
     Serial.println("closing");
     entry.close();
   }
 }
 
 
-bool MusicFile(String FileName)
-{
+bool MusicFile(String FileName) {
   // returns true if file is one of the supported file types, i.e. mp3,aac
   String ext;
-  ext=FileName.substring(FileName.indexOf('.')+1);
-  if((ext=="mp3")|(ext=="aac"))
+  ext = FileName.substring(FileName.indexOf('.') + 1);
+  if ((ext == "mp3") | (ext == "aac"))
     return true;
   else
     return false;
@@ -133,9 +126,9 @@ bool MusicFile(String FileName)
 //   // looks at the ADC pin that the potentiometer is connected to.
 //   // returns the value as a volume setting
 //   // The esp32's ADC has linerality problems at top and bottom we will ignore them and only respond to values in the middle range
-  
+
 //   uint16_t VolumeSettingReading;
-  
+
 //   VolumeSettingReading=analogRead(VolPin);
 //   if(VolumeSettingReading<25)  // because of problems mentioned above, anything below 25 will be 0 volume
 //     return 0;
