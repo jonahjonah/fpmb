@@ -32,11 +32,14 @@ File RootDir;
 int reedSwitchState;
 
 void setup() {
+    Serial.begin(57600);
+
+    Serial.println("Setup");
+
     pinMode(SD_CS, OUTPUT);    
     pinMode(REED_SWITCH, INPUT_PULLUP); // set ESP32 pin to input pull-up mode  
     digitalWrite(SD_CS, HIGH);
     SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    Serial.begin(115200);
     if(!SD.begin(SD_CS))
     {
       Serial.println("Error talking to SD card!");
@@ -52,8 +55,13 @@ void loop()
   reedSwitchState = digitalRead(REED_SWITCH); // read state
 
    if (reedSwitchState == HIGH) {
+     Serial.println("looping");
     audio.loop(); 
-    audio.setVolume(10);         // Check volume level and adjust if necassary
+    Serial.println("setting volume");
+
+    audio.setVolume(20);         // Check volume level and adjust if necassary
+    Serial.println("done");
+
   } else {
     Serial.println("The box is closed");
   }
@@ -72,9 +80,11 @@ void PlayNextSong()
   
   while(SongFound==false)
   {
+    Serial.println("finding files");
     File entry =  RootDir.openNextFile();
     if (!entry)      // no more files
     {
+      Serial.println("no more files");
       if(DirRewound==true)              // If we've already rewound once then there are no songs to play in this DIR
       {
         Serial.println("No MP3 files found to play");
@@ -87,16 +97,20 @@ void PlayNextSong()
     }
     else
     {
+      Serial.println("found file");
       if (!entry.isDirectory())                // only enter this if not a DIR
       {
+        Serial.println("not dir");
         if(MusicFile(entry.name()))                   // Only enter if one of the acceptable music files
         {  
-          Serial.print("Playing ");Serial.println(entry.name());
+          //Serial.print("Playing ");Serial.println(entry.name());
           audio.connecttoSD(entry.name());                          // Play the file
+          Serial.println("called audio.connectoSD");
           SongFound=true;
         }
       }
     }    
+    Serial.println("closing");
     entry.close();
   }
 }
