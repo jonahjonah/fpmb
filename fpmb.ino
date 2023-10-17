@@ -30,6 +30,7 @@ Audio audio;
 File RootDir;
 
 int reedSwitchState;
+// bool isSongPlaying;
 
 void setup() {
   Serial.begin(57600);
@@ -64,11 +65,32 @@ void loop() {
   } else {
     Serial.println("The box is closed");
   }
+
+  // Box Closed: Trying to make the logic to continue playing the song when the box is closed, but its broken as of now
+  // if (reedSwitchState == HIGH) {
+  //   // Serial.println("Set song playing = true");
+  //   isSongPlaying = true;
+  //   PlayNextSong();
+  // } else {
+  //   Serial.println("The box is closed");
+  // }
+
+  // if (isSongPlaying) {
+  //   // Serial.println("looping");
+  //   audio.loop();
+  //   // Serial.println("setting volume");
+
+  //   audio.setVolume(20);  // Check volume level and adjust if necassary
+  //   // Serial.println("done");
+  // }
 }
 
 
 void audio_eof_mp3(const char *info) {  //end of file
   PlayNextSong();
+  // Box Closed logic
+  // Serial.println("Song finished, set song playing = false");
+  // isSongPlaying = false;
 }
 
 void PlayNextSong() {

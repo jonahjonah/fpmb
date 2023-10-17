@@ -130,3 +130,24 @@ ets Jul 29 2019 12:21:46
 
 - Tried testing older code on other boards, and all are still getting `Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.` error
   - It seems like this is caused by memory running out and a memory location getting overwritten, and then incorrectly accessed
+
+## 10/16
+
+- Got board 4 working (needed to break traces under ESP32)
+- Got board 3 working (code issue was it just needed board drivers to be updated)
+- [x] Board 1 works!
+- [x] Board 2
+
+### Assembly ideas
+
+- Machine screws (nut + bolt) will work, could paint the outside part black
+- Could 3D print a bracket for the speakers, which would be glued to the inside of the box. Then speakers would screw to the brackets
+- Could also 3D print brackets for the protoboards. Em got started on something and may print out some example pieces
+
+### Coding
+
+- Trying to get it to play when the box opens (reed switch is open), and continue playing until the end of the song. Then play the next song when the box opens again
+- Sorta got this working by adding a `isSongPlaying` variable and setting that true when the RS opens, and false at the end of the song
+  - Behavior has been strange. Need to play with it more
+  - Was also getting some issues with sound quality when I had comments/else statements in the loop. Need to investigate that too. Not committing that code right now. Or maybe I'll commit it commented out
+  - It also won't loop when it gets to the end of the dir. Not sure why that is. Tried formatting the card, didn't help
