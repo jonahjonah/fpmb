@@ -151,3 +151,33 @@ ets Jul 29 2019 12:21:46
   - Behavior has been strange. Need to play with it more
   - Was also getting some issues with sound quality when I had comments/else statements in the loop. Need to investigate that too. Not committing that code right now. Or maybe I'll commit it commented out
   - It also won't loop when it gets to the end of the dir. Not sure why that is. Tried formatting the card, didn't help
+
+## 10/25
+
+- Working on mounting internal components on a board
+- Thinking it would be easier to use pinhead terminals for reed switch
+- Might be good to use more flexible wire too, make it easier to move around without disturbing stuff
+
+### EOD
+
+- Got Board 2 working with battery power
+  - It can only handle up to 19 volume as is, but that seems ok
+  - Added capacitor across VIN/GND to help with loss of power
+  - Could also switch to larger Booster (esp for the larger speaker one)
+- Other takeaways
+  - Should switch to softer wires for speaker wires, reed switches, this will make it easier to take the boards in/out without harming the wires/boards/etc
+  - For reed switches, Em has tools to add pinhead ends/terminals to the reed switch cables, and maybe to the speaker ones too
+
+## 10/28
+
+### Code
+
+- Tested Vaibhav's code, it sorta worked with some edits!
+- Still does not "rewind" after playing both songs
+  - Currently only printing stuff around finding a file to play, trying to figure out why "rewind" isn't working
+- Reed switches only activate at one side, need to line up magnet with that side
+
+### Build
+
+- Painted speaker grates
+- Attached speaker grates to all boxes
