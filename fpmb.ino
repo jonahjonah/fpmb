@@ -21,21 +21,19 @@
 #define I2S_BCLK 27  // I2S
 #define I2S_LRC 26
 
-// #define VolPin        13
-
 Audio audio;
-
-// uint8_t Volume;                         // range is 0 to 21
 
 File RootDir;
 
 int reedSwitchState;
-// bool isSongPlaying;
+bool isSongPlaying;
 
 void setup() {
   Serial.begin(57600);
-
   Serial.println("Setup");
+  // Print some useful debug output - the filename and compilation time 
+  Serial.println(__FILE__);
+  Serial.println("Compiled: " __DATE__ ", " __TIME__);
 
   pinMode(SD_CS, OUTPUT);
   pinMode(REED_SWITCH, INPUT_PULLUP);  // set ESP32 pin to input pull-up mode
@@ -48,49 +46,37 @@ void setup() {
   }
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
   RootDir = SD.open("/");
-  PlayNextSong();  // Play next song, which will be the first at this point
+  Serial.println("setting volume");
+  audio.setVolume(20);  // Check volume level and adjust if necassary
 }
 
+/* this function is called repeated by adruino, using it to check sensor states */
 void loop() {
   reedSwitchState = digitalRead(REED_SWITCH);  // read state
 
   if (reedSwitchState == HIGH) {
     Serial.println("looping");
+    /* audio_eof_mp3 will be called when current song finishes */
     audio.loop();
-    Serial.println("setting volume");
-
-    audio.setVolume(20);  // Check volume level and adjust if necassary
+    Serial.println("Set song playing = true");
+    isSongPlaying = true;
+    PlayNextSong();
     Serial.println("done");
-
-  } else {
-    Serial.println("The box is closed");
+  } else if (isSongPlaying) {
+    Serial.println("Continue to play the song");
+    audio.loop();
   }
-
-  // Box Closed: Trying to make the logic to continue playing the song when the box is closed, but its broken as of now
-  // if (reedSwitchState == HIGH) {
-  //   // Serial.println("Set song playing = true");
-  //   isSongPlaying = true;
-  //   PlayNextSong();
-  // } else {
-  //   Serial.println("The box is closed");
-  // }
-
-  // if (isSongPlaying) {
-  //   // Serial.println("looping");
-  //   audio.loop();
-  //   // Serial.println("setting volume");
-
-  //   audio.setVolume(20);  // Check volume level and adjust if necassary
-  //   // Serial.println("done");
-  // }
+    else {
+    Serial.println("No song is playing and the box is closed");
+  }
 }
 
-
-void audio_eof_mp3(const char *info) {  //end of file
-  PlayNextSong();
-  // Box Closed logic
-  // Serial.println("Song finished, set song playing = false");
-  // isSongPlaying = false;
+/* this function is called by audio when current mp3 finishes */
+void audio_eof_mp3(const char *info) { //end of file
+  /* play next song only if box is open */
+  if (reedSwitchState == HIGH){
+    PlayNextSong();
+  }
 }
 
 void PlayNextSong() {
@@ -141,21 +127,3 @@ bool MusicFile(String FileName) {
   else
     return false;
 }
-
-
-// uint8_t GetVolume()
-// {
-//   // looks at the ADC pin that the potentiometer is connected to.
-//   // returns the value as a volume setting
-//   // The esp32's ADC has linerality problems at top and bottom we will ignore them and only respond to values in the middle range
-
-//   uint16_t VolumeSettingReading;
-
-//   VolumeSettingReading=analogRead(VolPin);
-//   if(VolumeSettingReading<25)  // because of problems mentioned above, anything below 25 will be 0 volume
-//     return 0;
-//   if(VolumeSettingReading>4000) // because of problems mentioned above, anything above 4000 will be 21 volume
-//     return 21;
-//   // If we get this far we are in the middle range that should be linear 500-4000
-//   return uint8_t(((VolumeSettingReading-25)/190));  // this will give the correct 0-21 range
-// }
