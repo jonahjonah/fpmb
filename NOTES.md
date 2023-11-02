@@ -181,3 +181,22 @@ ets Jul 29 2019 12:21:46
 
 - Painted speaker grates
 - Attached speaker grates to all boxes
+
+## 11/1
+
+### Build
+
+- tinned all bendy wires
+- VengaBox
+  - replaced speaker wires with bendy wires
+  - replaced RS wire with bendy wires, and pin terminals
+  - glued in RS, block/magnet. tested and it works
+    - However, the magnet block is not well secured, and is maybe too long, and fell off. Needs to be shortened and better glued in
+  - Glued all components to internal board, and it works! Huzzah!
+- Board 3
+  - built the 3rd battery assembly
+  - connected to Board 3 with bendy wires
+  - Tried turning on, and the light came on, but would go in and out. It seemed to be happening when I'd move or touch the wires under the switch. Upon investigation, the black wire had come loose.
+    - Resoldered the black wire, and tried again, and the light turned on, then off, and never turned back on. Need to investigate further, perhaps with a multimeter
+
+**A note on VengaBox board. I plugged it into the computer to reprogram, and the board wouldn't show up in Arduino IDE. I moved it around, and it would show and disappear. I'm not sure if this is an issue with the cable, or with the board itself. Need to investigate further, and should get another cable**
