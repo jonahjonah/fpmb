@@ -200,3 +200,24 @@ ets Jul 29 2019 12:21:46
     - Resoldered the black wire, and tried again, and the light turned on, then off, and never turned back on. Need to investigate further, perhaps with a multimeter
 
 **A note on VengaBox board. I plugged it into the computer to reprogram, and the board wouldn't show up in Arduino IDE. I moved it around, and it would show and disappear. I'm not sure if this is an issue with the cable, or with the board itself. Need to investigate further, and should get another cable**
+
+## 11/7
+
+- Looping the direction isn't working. It doens't work in the Xtronical version, it seems to be an issue with the library?
+- Alternative: Hard code all file names
+  - ````void audio_eof_mp3(const char *info){  //end of file
+        Serial.print("audio_info: "); Serial.println(info);
+        static int i=0;
+        if(i==0) audio.connecttoSD("/wave_test/If_I_Had_a_Chicken.mp3");
+        if(i==1) audio.connecttoSD("/wave_test/test_8bit_stereo.wav");
+        if(i==2) audio.connecttoSD("/wave_test/test_16bit_mono.wav");
+        i++;
+        if(i==3) i=0;
+    }```
+    ````
+  - From https://github.com/schreibfaul1/ESP32-audioI2S/wiki "Playlist example"
+  - Could also use Arduino random number gen to shuffle playlist
+  - Possibly, could programmatically set filenames "1", "2", etc. And check if `audio.connecttoSD(fileName)` returns an error, and if so, start back at 0
+    - If shuffling with this method, set a max number
+  - **The easiest way is to name all songs 1, 2, 3, and create a for loop with the number of songs. Can set the number of songs for each playlist**
+    - Or could still use random and have a different `NUM_SONGS` for each playlist, and modulo that number for each one
