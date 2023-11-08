@@ -60,15 +60,12 @@ void loop() {
   reedSwitchState = digitalRead(REED_SWITCH);  // read state
 
   if (isSongPlaying) {
-    // Serial.println("Song is playing");
     audio.loop();
   } else if (reedSwitchState == HIGH && !isSongPlaying) {
     /* audio_eof_mp3 will be called when current song finishes */
-    // audio.loop();
-    Serial.println("Set song playing = true");
+    // Serial.println("Loading next song");
     isSongPlaying = true;
     PlayNextSong();
-    Serial.println("done");
   } else {
     if (loopCount % 20 == 0) {
       Serial.println("No song is playing and the box is closed");
@@ -81,21 +78,22 @@ void loop() {
 void audio_eof_mp3(const char *info) {  //end of file
   /* play next song only if box is open */
   isSongPlaying = false;
-  // if (reedSwitchState == HIGH){
-  //   PlayNextSong();
-  // }
+  // Serial.println("END OF MP3");
 }
+
+// void audio_info(const char *info){
+//     Serial.print("info        "); Serial.println(info);
+// }
 
 void PlayNextSong() {
   bool SongFound = false;
   bool DirRewound = false;
 
   while (SongFound == false) {
-    Serial.println("finding files");
     File entry = RootDir.openNextFile();
     if (!entry)  // no more files
     {
-      Serial.println("no more files");
+      // Serial.println("Restarting playlist");
       if (DirRewound == true)  // If we've already rewound once then there are no songs to play in this DIR
       {
         Serial.println("No MP3 files found to play");
@@ -103,29 +101,30 @@ void PlayNextSong() {
         return;
       }
       //else we've reached the end of all files in this directory, just rewind back to beginning
+      // Serial.println("Rewinding directory");
       RootDir.rewindDirectory();  // reset back to beginning
       DirRewound = true;          // Flag that we've rewound
     } else {
-      Serial.println("found file");
+      // Serial.print("Found: "); Serial.println(entry.name());
       if (!entry.isDirectory())  // only enter this if not a DIR
       {
-        Serial.println("not dir");
-        if (MusicFile(entry.name()))  // Only enter if one of the acceptable music files
+        if (isMusicFile(entry.name()))  // Only enter if one of the acceptable music files
         {
-          //Serial.print("Playing ");Serial.println(entry.name());
-          audio.connecttoSD(entry.name());  // Play the file
-          Serial.println("called audio.connectoSD");
+          bool returnVal = audio.connecttoSD(entry.name(),0 );  // Play the file
+          // Serial.println(returnVal);
+          // audio.setAudioPlayPosition(0);
           SongFound = true;
+          // Serial.print("Playing: "); Serial.println(entry.name());
         }
       }
     }
-    Serial.println("closing");
     entry.close();
   }
+  // Serial.println("Found song");
 }
 
 
-bool MusicFile(String FileName) {
+bool isMusicFile(String FileName) {
   // returns true if file is one of the supported file types, i.e. mp3,aac
   String ext;
   ext = FileName.substring(FileName.indexOf('.') + 1);
